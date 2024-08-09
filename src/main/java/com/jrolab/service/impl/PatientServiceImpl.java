@@ -1,4 +1,4 @@
-package com.jrolab.service;
+package com.jrolab.service.impl;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.jrolab.medic_app.model.Patient;
 import com.jrolab.medic_app.repo.PatientRepo;
+import com.jrolab.service.PatientService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Patient update(Integer id, Patient patient) {
-        // TODO Valitation
+    
         return repo.save(patient);
     }
 
