@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MedicServiceImpl extends CRUDimpl<Medic, Integer>  implements MedicService{
+public class MedicServiceImpl extends CRUDimpl<Medic, Integer>  implements MedicService {
 
     private final MedicRepo repo;
 

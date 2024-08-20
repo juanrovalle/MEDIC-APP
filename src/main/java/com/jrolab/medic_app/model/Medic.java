@@ -33,7 +33,7 @@ public class Medic {
     @Column(nullable = false, length = 70)
     private String lastname;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 12)
     private String NPI;
 
     @Column(length = 250)

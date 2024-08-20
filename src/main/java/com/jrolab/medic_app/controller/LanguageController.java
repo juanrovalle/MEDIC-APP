@@ -1,17 +1,34 @@
-// package com.jrolab.medic_app.controller;
+package com.jrolab.medic_app.controller;
 
-// import org.hibernate.validator.spi.messageinterpolation.LocaleResolver;
+import java.util.Locale;
 
-// import jakarta.servlet.http.HttpServlet;
-// import jakarta.servlet.http.HttpServletRequest;
-// import jakarta.servlet.http.HttpServletResponse;
-// import lombok.RequiredArgsConstructor;
-// @RequiredArgsConstructor
-// public class LanguageController {
-//     private final LocaleResolver localeResolver;
-//     private final HttpServletRequest httpServletRequest ;
-//     private final HttpServletResponse   httpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.LocaleResolver;
 
-//     // Pendiente
-    
-// }
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+@RestController
+@RequestMapping("/languages")
+@RequiredArgsConstructor
+public class LanguageController {
+    private final LocaleResolver localeResolver;
+    private final HttpServletRequest httpServletRequest;
+    private final HttpServletResponse httpServletResponse;
+
+    @GetMapping("/locale/{loc}")
+    public ResponseEntity<Void> changeLocale(@PathVariable("loc") String loc) {
+     Locale userLocale  = switch (loc) {
+            case "en", "us" -> Locale.ENGLISH;
+            case "fr" -> Locale.FRENCH;
+            default -> Locale.ROOT;
+        };
+        localeResolver.setLocale(httpServletRequest, httpServletResponse, userLocale);
+        return ResponseEntity.ok().build();
+    }
+
+}

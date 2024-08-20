@@ -20,7 +20,7 @@ public class Speciality {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Integer idSpecialtly;
+    private Integer idSpeciality;
 
     @Column(nullable = false, length = 50)
     private String name;
