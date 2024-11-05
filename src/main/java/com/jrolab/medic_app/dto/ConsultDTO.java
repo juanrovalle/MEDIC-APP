@@ -1,22 +1,13 @@
 package com.jrolab.medic_app.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.jrolab.medic_app.model.ConsultDetail;
-import com.jrolab.medic_app.model.Medic;
-import com.jrolab.medic_app.model.Patient;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,17 +15,23 @@ import lombok.NoArgsConstructor;
 public class ConsultDTO {
 
     private Integer idConsult;
-    
+
     @NotNull
     private PatientDTO patient;
-    @NotNull
-    private Integer idUser;
+
     @NotNull
     private MedicDTO medic;
+
     @NotNull
-    private String NumConsult;
+    private Integer idUser;
+
+    @NotNull
+    private String numConsult;
+
     @NotNull
     private LocalDateTime consultDate;
+
     @NotNull
+    @JsonManagedReference
     private List<ConsultDetailDTO> details;
 }

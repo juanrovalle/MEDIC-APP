@@ -18,7 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.jrolab.medic_app.dto.SpecialityDTO;
 import com.jrolab.medic_app.model.Speciality;
-import com.jrolab.service.SpecialityService;
+import com.jrolab.medic_app.service.SpecialityService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class SpecialityController {
 
     private final SpecialityService service;
-    @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
 
     @GetMapping

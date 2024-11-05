@@ -1,10 +1,15 @@
 package com.jrolab.medic_app.controller;
 
+import java.beans.BeanProperty;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
+import com.jrolab.medic_app.dto.*;
+import org.hibernate.mapping.Collection;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,57 +18,61 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.jrolab.medic_app.dto.ExamDTO;
+
+import com.jrolab.medic_app.model.Consult;
 import com.jrolab.medic_app.model.Exam;
-import com.jrolab.service.ExamService;
+import com.jrolab.medic_app.service.ConsultService;
+import com.jrolab.medic_app.util.MapperUtil;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/consults")
 @RequiredArgsConstructor
 public class ConsultController {
 
-    private final ExamService service;
+    private final ConsultService service;
+    // private final ModelMapper modelMapper;
+    private final MapperUtil mapperUtil;
 
     public String getMethodName(@RequestParam String param) {
         return new String();
     }
- 
-     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<ExamDTO>> findAll() {
-        List<ExamDTO> list = service.findAll()
-                .stream().map(this::convertToDto).toList();
-
+    public ResponseEntity<List<ConsultDTO>> findAll() {
+        List<ConsultDTO> list = mapperUtil.mapList(service.findAll(), ConsultDTO.class, "consultMapper");
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExamDTO> findById(@PathVariable("id") Integer id) {
-        Exam Exam = service.findById(id);
-
-        return ResponseEntity.ok(convertToDto(Exam));
+    public ResponseEntity<ConsultDTO> findById(@PathVariable("id") Integer id) {
+        Consult Consult = service.findById(id);
+        return ResponseEntity.ok(mapperUtil.map(Consult, ConsultDTO.class, "consultMapper"));
     }
 
     @PostMapping
-    public ResponseEntity<Exam> save(@Valid @RequestBody ExamDTO ExamDTO) {
-        Exam obj = service.save(convertToEntity(ExamDTO));
+    public ResponseEntity<Consult> save(@Valid @RequestBody ConsultListExamDTO dto) {
+
+        Consult obj = service.saveTransactional(mapperUtil.map(dto.getConsult(), Consult.class, "consultMapper"),
+                mapperUtil.mapList(dto.getListExam(), Exam.class));
+
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(obj.getIdExam()).toUri();
+                .buildAndExpand(obj.getIdConsult()).toUri();
         return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExamDTO> update(@PathVariable("id") Integer id, @RequestBody ExamDTO ExamDTO) {
-        ExamDTO.setIdExam(id);
-        Exam obj = service.update(id, modelMapper.map(ExamDTO, Exam.class));
-        return ResponseEntity.ok(convertToDto(obj));
+    public ResponseEntity<ConsultDTO> update(@PathVariable("id") Integer id, @RequestBody ConsultDTO ConsultDTO) {
+        ConsultDTO.setIdConsult(id);
+        Consult obj = service.update(id, mapperUtil.map(ConsultDTO, Consult.class, "consultMapper"));
+
+        return ResponseEntity.ok(mapperUtil.map(obj, ConsultDTO.class, "consultMapper"));
     }
 
     @DeleteMapping("{id}")
@@ -72,11 +81,65 @@ public class ConsultController {
         return ResponseEntity.noContent().build();
     }
 
-    private ExamDTO convertToDto(Exam obj) {
-        return modelMapper.map(obj, ExamDTO.class);
+    // private ConsultDTO convertToDto(Consult obj) {
+
+    // // Return the mapped DTO
+    // return modelMapper.map(obj, ConsultDTO.class);
+    // }
+
+    // private Consult convertToEntity(ConsultDTO obj) {
+    // return modelMapper.map(obj, Consult.class);
+    // }
+
+    // public <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
+
+    // return source
+    // .stream()
+    // .map(element -> modelMapper.map(element, targetClass))
+    // .toList();
+    // }
+
+    // Queries
+
+    @PostMapping("/search/others")
+    public ResponseEntity<List<ConsultDTO>> searchByOthers(@RequestBody FilterConsultDTO dto) {
+        List<Consult> list = service.search(dto.getDni(), dto.getFullName());
+        List<ConsultDTO> listDTO = mapperUtil.mapList(list, ConsultDTO.class, "consultMapper");
+        return ResponseEntity.ok(listDTO);
+
     }
 
-    private Exam convertToEntity(ExamDTO obj) {
-        return modelMapper.map(obj, Exam.class);
+    @GetMapping("/search/dates")
+    public ResponseEntity<List<ConsultDTO>> searchByDates(
+            @RequestParam(value = "date1", defaultValue = "2024-08-01") String date1,
+            @RequestParam(value = "date2", defaultValue = "2024-09-30") String date2) {
+        List<Consult> list = service.searchByDates(LocalDateTime.parse(date1), LocalDateTime.parse(date2));
+        List<ConsultDTO> listDTO = mapperUtil.mapList(list, ConsultDTO.class, "consultMapper");
+
+        return ResponseEntity.ok(listDTO);
+
+    }
+
+    @GetMapping("/callProcedureNative")
+    public ResponseEntity<List<ConsultProcDTO>> CallProcedureNative() {
+        List<ConsultProcDTO> list = new ArrayList<>();
+
+        service.callProcedureOrFunctionNative().forEach(e -> {
+            ConsultProcDTO dto = new ConsultProcDTO();
+            dto.setQuantity(Integer.parseInt(String.valueOf(e.getQuantity())));
+            dto.setConsultDate(e.getConsultDate().toString());
+            list.add(dto);
+        });
+
+
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/callProcedureProjection")
+    public ResponseEntity<List<IConsultDTO>> callProcedureProjection() {
+
+
+
+        return ResponseEntity.ok(service.callProcedureOrFunctionProjection());
     }
 }

@@ -1,11 +1,16 @@
 package com.jrolab.medic_app.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,18 +23,18 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.jrolab.medic_app.dto.PatientDTO;
 import com.jrolab.medic_app.model.Patient;
-import com.jrolab.service.PatientService;
+import com.jrolab.medic_app.service.PatientService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@CrossOrigin()
 @RequestMapping("/patients")
 @RequiredArgsConstructor
 public class PatientController {
 
     private final PatientService service;
-    @Qualifier("defaultMapper")
     private final ModelMapper modelMapper;
 
     @GetMapping
@@ -66,6 +71,18 @@ public class PatientController {
     public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/hateoas/{id}")
+    public EntityModel<PatientDTO> findByHateoas(@PathVariable("id") Integer id) {
+        EntityModel<PatientDTO> patientDTOEM = EntityModel.of(convertToDto(service.findById(id)));
+
+        WebMvcLinkBuilder link1 = linkTo(methodOn(this.getClass()).findById(id));
+        patientDTOEM.add(link1.withRel("patient-self-info"));
+        WebMvcLinkBuilder link2 = linkTo(methodOn(MedicController.class).findAll());
+        patientDTOEM.add(link2.withRel("Medic-self-info"));
+
+        return patientDTOEM;
     }
 
     private PatientDTO convertToDto(Patient obj) {

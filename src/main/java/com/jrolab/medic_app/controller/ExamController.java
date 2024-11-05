@@ -18,13 +18,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.jrolab.medic_app.dto.ExamDTO;
 import com.jrolab.medic_app.model.Exam;
-import com.jrolab.service.ExamService;
+import com.jrolab.medic_app.service.ExamService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping("/consults")
+@RequestMapping("/exams")
 @RequiredArgsConstructor
 public class ExamController {
 

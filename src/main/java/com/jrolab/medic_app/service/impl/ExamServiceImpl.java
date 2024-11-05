@@ -1,13 +1,11 @@
-package com.jrolab.service.impl;
+package com.jrolab.medic_app.service.impl;
 
 
 import org.springframework.stereotype.Service;
 
 import com.jrolab.medic_app.model.Exam;
 import com.jrolab.medic_app.repo.GenericRepo;
-import com.jrolab.service.ExamService;
-
-
+import com.jrolab.medic_app.service.ExamService;
 
 import lombok.RequiredArgsConstructor;
 

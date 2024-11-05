@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConsultProcDTO {
-    private Integer quantity;
-    private  String ConsultDate;
+public class FilterConsultDTO {
+
+    private String dni;
+    private String fullName;
 }

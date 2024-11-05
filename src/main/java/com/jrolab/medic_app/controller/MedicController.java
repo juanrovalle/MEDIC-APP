@@ -18,8 +18,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.jrolab.medic_app.dto.MedicDTO;
 import com.jrolab.medic_app.model.Medic;
+import com.jrolab.medic_app.service.MedicService;
 import com.jrolab.medic_app.util.MapperUtil;
-import com.jrolab.service.MedicService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +32,6 @@ public class MedicController {
 
     private final MedicService service;
 
-    @Qualifier("medicMapper")
     public String getMethodName(@RequestParam String param) {
         return new String();
     }
