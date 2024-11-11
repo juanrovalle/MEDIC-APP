@@ -1,11 +1,21 @@
 package com.jrolab.medic_app.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.jrolab.medic_app.dto.ConsultProcDTO;
 import com.jrolab.medic_app.dto.IConsultDTO;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,12 +69,13 @@ public class ConsultServiceImpl extends CRUDimpl<Consult, Integer> implements Co
         consultRepo.callProcedureOrFunctionNative().forEach(e -> {
             ConsultProcDTO dto = new ConsultProcDTO();
             dto.setQuantity(Integer.parseInt(String.valueOf(e[0])));
-            dto.setConsultDate(String.valueOf(e[1]));
+            dto.setConsultdate(String.valueOf(e[1]));
             list.add(dto);
         });
 
         return list;
     }
+
 
     @Override
     public List<IConsultDTO> callProcedureOrFunctionProjection() {
@@ -73,6 +84,18 @@ public class ConsultServiceImpl extends CRUDimpl<Consult, Integer> implements Co
 
     @Override
     public byte[] generateReport() throws Exception {
-        return new byte[0];
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] data = null;
+        Document document = new Document();
+        PdfWriter.getInstance(document,byteArrayOutputStream);
+
+        document.open();
+        Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
+        Chunk chunk = new Chunk("Hello World", font);
+
+        document.add(chunk);
+        document.close();
+        data = byteArrayOutputStream.toByteArray();
+        return data;
     }
 }

@@ -10,6 +10,7 @@ import com.jrolab.medic_app.dto.*;
 import org.hibernate.mapping.Collection;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -127,7 +128,7 @@ public class ConsultController {
         service.callProcedureOrFunctionNative().forEach(e -> {
             ConsultProcDTO dto = new ConsultProcDTO();
             dto.setQuantity(Integer.parseInt(String.valueOf(e.getQuantity())));
-            dto.setConsultDate(e.getConsultDate().toString());
+            dto.setConsultdate(e.getConsultdate());
             list.add(dto);
         });
 
@@ -139,7 +140,13 @@ public class ConsultController {
     public ResponseEntity<List<IConsultDTO>> callProcedureProjection() {
 
 
-
         return ResponseEntity.ok(service.callProcedureOrFunctionProjection());
+    }
+
+    @GetMapping(value = "/generateReport", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> generateReports() throws Exception {
+        byte[] data = service.generateReport();
+
+        return ResponseEntity.ok(data);
     }
 }
